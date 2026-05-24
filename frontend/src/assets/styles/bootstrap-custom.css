@@ -1,0 +1,8 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --bs-primary: #e64f6a;
+  --bs-primary-rgb: 230, 79, 106;
+  --bs-success: #32a071;
+  --bs-success-rgb: 50, 160, 113;
+}
