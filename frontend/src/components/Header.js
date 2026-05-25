@@ -1,7 +1,12 @@
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { FaShoppingCart } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
+  const { cartItems } = useSelector((state) => state.cart);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
+
   return (
     <header>
       <Navbar bg="primary" variant="dark" expand="lg" collapseOnSelect>
@@ -16,6 +21,16 @@ const Header = () => {
             <Nav className="ms-auto">
               <LinkContainer to="/">
                 <Nav.Link>Proizvodi</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/cart">
+                <Nav.Link>
+                  <FaShoppingCart /> Korpa{' '}
+                  {cartCount > 0 && (
+                    <Badge pill bg="light" text="primary">
+                      {cartCount}
+                    </Badge>
+                  )}
+                </Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>

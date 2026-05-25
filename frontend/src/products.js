@@ -31,7 +31,7 @@ const products = [
     image:
       'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80',
     description:
-      'Tamna cokolada, peceni lesnik i hrskavi kakao posip u bogatoj mlecnog bazi.',
+      'Tamna cokolada, peceni lesnik i hrskavi kakao posip u bogatoj mlecnoj bazi.',
     category: 'Cokolada',
     price: 690.0,
     countInStock: 9,

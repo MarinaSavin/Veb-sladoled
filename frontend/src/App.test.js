@@ -1,5 +1,7 @@
+import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import store from './store';
 import HomeScreen from './screens/HomeScreen';
 
 jest.mock(
@@ -15,7 +17,11 @@ jest.mock(
 );
 
 test('renders Ice Shop catalog', () => {
-  render(<HomeScreen />);
+  render(
+    <Provider store={store}>
+      <HomeScreen />
+    </Provider>,
+  );
 
   expect(screen.getByRole('heading', { name: /^Ice Shop$/i })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Vanila Bourbon/i })).toBeInTheDocument();
@@ -23,7 +29,11 @@ test('renders Ice Shop catalog', () => {
 });
 
 test('filters products by search', async () => {
-  render(<HomeScreen />);
+  render(
+    <Provider store={store}>
+      <HomeScreen />
+    </Provider>,
+  );
 
   await userEvent.type(screen.getByLabelText(/Pretraga/i), 'mango');
 
@@ -32,7 +42,12 @@ test('filters products by search', async () => {
 });
 
 test('shows out of stock ice cream', () => {
-  render(<HomeScreen />);
+  render(
+    <Provider store={store}>
+      <HomeScreen />
+    </Provider>,
+  );
 
+  expect(screen.getAllByRole('button', { name: /Dodaj u korpu/i }).length).toBeGreaterThan(0);
   expect(screen.getByText(/Nema na stanju/i)).toBeInTheDocument();
 });

@@ -1,10 +1,13 @@
-import { Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
+import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Rating from '../components/Rating';
 import products from '../products';
+import { addToCart } from '../slices/cartSlice';
 
 const ProductScreen = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const product = products.find((item) => item._id === id);
 
   if (!product) {
@@ -17,6 +20,10 @@ const ProductScreen = () => {
       </>
     );
   }
+
+  const addToCartHandler = () => {
+    dispatch(addToCart({ ...product, qty: 1 }));
+  };
 
   return (
     <>
@@ -55,6 +62,16 @@ const ProductScreen = () => {
                   <Col>Status:</Col>
                   <Col>{product.countInStock > 0 ? 'Na stanju' : 'Nema na stanju'}</Col>
                 </Row>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <Button
+                  type="button"
+                  className="w-100"
+                  disabled={product.countInStock === 0}
+                  onClick={addToCartHandler}
+                >
+                  Dodaj u korpu
+                </Button>
               </ListGroup.Item>
             </ListGroup>
           </Card>

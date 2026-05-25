@@ -1,8 +1,16 @@
-import { Card } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Rating from './Rating';
+import { addToCart } from '../slices/cartSlice';
 
 const Product = ({ product }) => {
+  const dispatch = useDispatch();
+
+  const addToCartHandler = () => {
+    dispatch(addToCart({ ...product, qty: 1 }));
+  };
+
   return (
     <Card className="product-card h-100">
       <Link to={`/product/${product._id}`}>
@@ -21,6 +29,14 @@ const Product = ({ product }) => {
           <Card.Text className={product.countInStock > 0 ? 'text-success' : 'text-danger'}>
             {product.countInStock > 0 ? 'Na stanju' : 'Nema na stanju'}
           </Card.Text>
+          <Button
+            type="button"
+            className="w-100"
+            disabled={product.countInStock === 0}
+            onClick={addToCartHandler}
+          >
+            Dodaj u korpu
+          </Button>
         </div>
       </Card.Body>
     </Card>
