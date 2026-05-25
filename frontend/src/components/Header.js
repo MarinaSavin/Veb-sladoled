@@ -1,10 +1,11 @@
 import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.auth);
   const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
   return (
@@ -31,6 +32,14 @@ const Header = () => {
                     </Badge>
                   )}
                 </Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/login">
+                <Nav.Link>
+                  <FaUser /> {userInfo ? userInfo.name : 'Prijava'}
+                </Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/register">
+                <Nav.Link>Registracija</Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>

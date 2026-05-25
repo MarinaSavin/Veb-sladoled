@@ -2,8 +2,7 @@ const products = [
   {
     _id: '1',
     name: 'Vanila Bourbon',
-    image:
-      'https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/vanila-bourbon.png',
     description:
       'Kremasti sladoled od vanile sa notama karamele i pravim Bourbon ekstraktom.',
     category: 'Vanila',
@@ -15,8 +14,7 @@ const products = [
   {
     _id: '2',
     name: 'Jagoda Fresh',
-    image:
-      'https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/jagoda-fresh.png',
     description:
       'Lagani sladoled od jagoda sa komadicima svezeg voca, idealan za tople dane.',
     category: 'Voce',
@@ -28,8 +26,7 @@ const products = [
   {
     _id: '3',
     name: 'Coko Lesnik',
-    image:
-      'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/coko-lesnik.png',
     description:
       'Tamna cokolada, peceni lesnik i hrskavi kakao posip u bogatoj mlecnoj bazi.',
     category: 'Cokolada',
@@ -41,8 +38,7 @@ const products = [
   {
     _id: '4',
     name: 'Pistaci Sicilija',
-    image:
-      'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/pistaci-sicilija.png',
     description:
       'Bogata krema od pistaca sa blagom morskom soli i finim orasastim ukusom.',
     category: 'Orasasto',
@@ -54,8 +50,7 @@ const products = [
   {
     _id: '5',
     name: 'Mango Sorbet',
-    image:
-      'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/mango-sorbet.png',
     description:
       'Osvezavajuci sorbet od manga i limete, bez mleka, lagan i vocni.',
     category: 'Vegan',
@@ -67,8 +62,7 @@ const products = [
   {
     _id: '6',
     name: 'Keks Karamela',
-    image:
-      'https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?auto=format&fit=crop&w=900&q=80',
+    image: '/images/products/keks-karamela.png',
     description:
       'Slana karamela, keks mrvice i nezna mlecna baza za porodicno pakovanje.',
     category: 'Karamela',

@@ -1,12 +1,17 @@
 import { Button, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart } from '../slices/cartSlice';
 
 const CartScreen = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cartItems, itemsPrice } = useSelector((state) => state.cart);
+
+  const checkoutHandler = () => {
+    navigate('/login?redirect=/shipping');
+  };
 
   return (
     <Row>
@@ -51,7 +56,12 @@ const CartScreen = () => {
             {itemsPrice} RSD
           </ListGroup.Item>
           <ListGroup.Item>
-            <Button type="button" className="w-100" disabled={cartItems.length === 0}>
+            <Button
+              type="button"
+              className="w-100"
+              disabled={cartItems.length === 0}
+              onClick={checkoutHandler}
+            >
               Nastavi na placanje
             </Button>
           </ListGroup.Item>

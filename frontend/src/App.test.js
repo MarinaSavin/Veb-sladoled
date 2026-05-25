@@ -1,7 +1,6 @@
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import store from './store';
 import HomeScreen from './screens/HomeScreen';
 
 jest.mock(
@@ -16,9 +15,18 @@ jest.mock(
   { virtual: true },
 );
 
+const testStore = {
+  getState: () => ({
+    cart: { cartItems: [] },
+    auth: { userInfo: null },
+  }),
+  subscribe: () => () => {},
+  dispatch: () => {},
+};
+
 test('renders Ice Shop catalog', () => {
   render(
-    <Provider store={store}>
+    <Provider store={testStore}>
       <HomeScreen />
     </Provider>,
   );
@@ -30,7 +38,7 @@ test('renders Ice Shop catalog', () => {
 
 test('filters products by search', async () => {
   render(
-    <Provider store={store}>
+    <Provider store={testStore}>
       <HomeScreen />
     </Provider>,
   );
@@ -43,7 +51,7 @@ test('filters products by search', async () => {
 
 test('shows out of stock ice cream', () => {
   render(
-    <Provider store={store}>
+    <Provider store={testStore}>
       <HomeScreen />
     </Provider>,
   );
