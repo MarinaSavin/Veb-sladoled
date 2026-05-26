@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import Rating from '../components/Rating';
 import products from '../products';
 import { addToCart } from '../slices/cartSlice';
+import { addToFavorites } from '../slices/favoriteSlice';
 
 const ProductScreen = () => {
   const { id } = useParams();
@@ -23,6 +24,10 @@ const ProductScreen = () => {
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty: 1 }));
+  };
+
+  const addToFavoritesHandler = () => {
+    dispatch(addToFavorites(product));
   };
 
   return (
@@ -71,6 +76,16 @@ const ProductScreen = () => {
                   onClick={addToCartHandler}
                 >
                   Dodaj u korpu
+                </Button>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <Button
+                  type="button"
+                  variant="outline-primary"
+                  className="w-100"
+                  onClick={addToFavoritesHandler}
+                >
+                  Dodaj u omiljene
                 </Button>
               </ListGroup.Item>
             </ListGroup>

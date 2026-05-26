@@ -16,7 +16,13 @@ const LoginScreen = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    dispatch(setCredentials({ name: 'Registrovani korisnik', email }));
+    dispatch(
+      setCredentials({
+        name: email.toLowerCase().includes('admin') ? 'Administrator' : 'Registrovani korisnik',
+        email,
+        isAdmin: email.toLowerCase().includes('admin'),
+      }),
+    );
     toast.success('Uspesna prijava');
     navigate(redirect);
   };
@@ -26,6 +32,9 @@ const LoginScreen = () => {
       <Col md={6}>
         <h1>Prijava</h1>
         <Form onSubmit={submitHandler}>
+          <p className="text-muted">
+            Za demo admin prikaz unesite email koji sadrzi rec <strong>admin</strong>.
+          </p>
           <Form.Group className="my-3" controlId="email">
             <Form.Label>Email adresa</Form.Label>
             <Form.Control
