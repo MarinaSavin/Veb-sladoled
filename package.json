@@ -1,19 +1,10 @@
 {
-  "name": "veb_skriptarnica",
+  "name": "veb_sladoled",
   "version": "1.0.0",
-  "description": "FTN Skriptarnica eCommerce application MERN stack",
-  "homepage": "https://github.com/MasaSaranovic/veb_skriptarnica#readme",
-  "bugs": {
-    "url": "https://github.com/MasaSaranovic/veb_skriptarnica/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MasaSaranovic/veb_skriptarnica.git"
-  },
-  "license": "MIT",
-  "author": "Masa Saranovic",
+  "description": "Veb Sladoled eCommerce application MERN stack",
+  "private": true,
   "type": "module",
-  "main": "server.js",
+  "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
