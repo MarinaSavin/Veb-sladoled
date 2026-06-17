@@ -1,17 +1,52 @@
+import { useEffect } from 'react';
 import { Button, Card, Col, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { clearCartItems } from '../slices/cartSlice';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 
 const PlaceOrderScreen = () => {
   const dispatch = useDispatch();
-  const { cartItems, shippingAddress, paymentMethod, totalPrice } = useSelector(
-    (state) => state.cart,
-  );
+  const navigate = useNavigate();
+  const {
+    cartItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    shippingPrice,
+    taxPrice,
+    totalPrice,
+  } = useSelector((state) => state.cart);
+  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
-  const placeOrderHandler = () => {
-    dispatch(clearCartItems());
-    toast.success('Porudzbina je kreirana');
+  useEffect(() => {
+    if (!shippingAddress.address) {
+      navigate('/shipping');
+    } else if (!paymentMethod) {
+      navigate('/payment');
+    }
+  }, [paymentMethod, shippingAddress, navigate]);
+
+  const placeOrderHandler = async () => {
+    try {
+      const res = await createOrder({
+        orderItems: cartItems,
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        shippingPrice,
+        taxPrice,
+        totalPrice,
+      }).unwrap();
+
+      dispatch(clearCartItems());
+      navigate(`/order/${res._id}`);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error || 'Greska prilikom kreiranja porudzbine');
+    }
   };
 
   return (
@@ -21,7 +56,8 @@ const PlaceOrderScreen = () => {
           <ListGroup.Item>
             <h2>Dostava</h2>
             <p>
-              {shippingAddress.address}, {shippingAddress.city} {shippingAddress.postalCode}
+              {shippingAddress.address}, {shippingAddress.city} {shippingAddress.postalCode},{' '}
+              {shippingAddress.country}
             </p>
           </ListGroup.Item>
           <ListGroup.Item>
@@ -49,19 +85,37 @@ const PlaceOrderScreen = () => {
             </ListGroup.Item>
             <ListGroup.Item>
               <Row>
+                <Col>Proizvodi</Col>
+                <Col>{itemsPrice} RSD</Col>
+              </Row>
+              <Row>
+                <Col>Dostava</Col>
+                <Col>{shippingPrice} RSD</Col>
+              </Row>
+              <Row>
+                <Col>PDV</Col>
+                <Col>{taxPrice} RSD</Col>
+              </Row>
+              <Row>
                 <Col>Ukupno</Col>
                 <Col>{totalPrice} RSD</Col>
               </Row>
             </ListGroup.Item>
+            {error && (
+              <ListGroup.Item>
+                <Message variant="danger">{error?.data?.message || error.error}</Message>
+              </ListGroup.Item>
+            )}
             <ListGroup.Item>
               <Button
                 type="button"
                 className="w-100"
-                disabled={cartItems.length === 0}
+                disabled={cartItems.length === 0 || isLoading}
                 onClick={placeOrderHandler}
               >
                 Naruci
               </Button>
+              {isLoading && <Loader />}
             </ListGroup.Item>
           </ListGroup>
         </Card>

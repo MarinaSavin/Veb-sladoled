@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Loader from '../components/Loader';
 import { setCredentials } from '../slices/authSlice';
+import { useRegisterMutation } from '../slices/usersApiSlice';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -12,8 +14,19 @@ const RegisterScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { search } = useLocation();
+  const [register, { isLoading }] = useRegisterMutation();
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const submitHandler = (event) => {
+  const redirect = new URLSearchParams(search).get('redirect') || '/';
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate(redirect);
+    }
+  }, [userInfo, redirect, navigate]);
+
+  const submitHandler = async (event) => {
     event.preventDefault();
 
     if (password !== confirmPassword) {
@@ -21,9 +34,14 @@ const RegisterScreen = () => {
       return;
     }
 
-    dispatch(setCredentials({ name, email }));
-    toast.success('Registracija uspesna');
-    navigate('/');
+    try {
+      const res = await register({ name, email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      toast.success('Registracija uspesna');
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -71,11 +89,12 @@ const RegisterScreen = () => {
               required
             />
           </Form.Group>
-          <Button type="submit">Registruj se</Button>
+          <Button type="submit" disabled={isLoading}>Registruj se</Button>
+          {isLoading && <Loader />}
         </Form>
         <Row className="py-3">
           <Col>
-            Vec imate nalog? <Link to="/login">Prijavite se</Link>
+            Vec imate nalog? <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>Prijavite se</Link>
           </Col>
         </Row>
       </Col>

@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
 import { Card, Col, Form, Row } from 'react-bootstrap';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
 import ProductList from '../components/ProductList';
-import products from '../products';
+import { useGetProductsQuery } from '../slices/productsApiSlice';
 
 const HomeScreen = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('Svi ukusi');
+  const { data: products = [], isLoading, error } = useGetProductsQuery();
 
   const categories = ['Svi ukusi', ...new Set(products.map((product) => product.category))];
 
@@ -17,7 +20,7 @@ const HomeScreen = () => {
 
         return matchKeyword && matchCategory;
       }),
-    [category, keyword],
+    [category, keyword, products],
   );
 
   return (
@@ -70,12 +73,20 @@ const HomeScreen = () => {
         </Card.Body>
       </Card>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="h4 mb-0">Ice Shop proizvodi</h2>
-        <span className="text-muted">{filteredProducts.length} proizvoda</span>
-      </div>
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error?.data?.message || error.error}</Message>
+      ) : (
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="h4 mb-0">Ice Shop proizvodi</h2>
+            <span className="text-muted">{filteredProducts.length} proizvoda</span>
+          </div>
 
-      <ProductList products={filteredProducts} />
+          <ProductList products={filteredProducts} />
+        </>
+      )}
     </>
   );
 };

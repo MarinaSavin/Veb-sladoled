@@ -1,23 +1,29 @@
 import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
 import Rating from '../components/Rating';
-import products from '../products';
 import { addToCart } from '../slices/cartSlice';
 import { addToFavorites } from '../slices/favoriteSlice';
+import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 
 const ProductScreen = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const product = products.find((item) => item._id === id);
+  const { data: product, isLoading, error } = useGetProductDetailsQuery(id);
 
-  if (!product) {
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
     return (
       <>
         <Link className="btn btn-light my-3" to="/">
           Nazad
         </Link>
-        <p>Proizvod nije pronadjen.</p>
+        <Message variant="danger">{error?.data?.message || error.error}</Message>
       </>
     );
   }

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { updateProduct } from '../slices/adminProductsSlice';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useGetProductDetailsQuery, useUpdateProductMutation } from '../slices/productsApiSlice';
 
 const ProductEditScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.adminProducts);
-  const product = products.find((item) => item._id === id);
+  const { data: product, isLoading, error } = useGetProductDetailsQuery(id);
+  const [updateProduct, { isLoading: loadingUpdate }] = useUpdateProductMutation();
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -30,10 +30,11 @@ const ProductEditScreen = () => {
     }
   }, [product]);
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
-    dispatch(
-      updateProduct({
+
+    try {
+      await updateProduct({
         ...product,
         name,
         price: Number(price),
@@ -41,32 +42,29 @@ const ProductEditScreen = () => {
         category,
         countInStock: Number(countInStock),
         description,
-      }),
-    );
-    toast.success('Proizvod je izmenjen');
-    navigate('/admin/productlist');
+      }).unwrap();
+      toast.success('Proizvod je izmenjen');
+      navigate('/admin/productlist');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
-
-  if (!product) {
-    return (
-      <>
-        <Link to="/admin/productlist" className="btn btn-light my-3">
-          Nazad
-        </Link>
-        <p>Proizvod nije pronadjen.</p>
-      </>
-    );
-  }
 
   return (
     <>
       <Link to="/admin/productlist" className="btn btn-light my-3">
         Nazad
       </Link>
-      <Row className="justify-content-md-center">
-        <Col md={8}>
-          <h1>Izmeni proizvod</h1>
-          <Form onSubmit={submitHandler}>
+      {loadingUpdate && <Loader />}
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error?.data?.message || error.error}</Message>
+      ) : (
+        <Row className="justify-content-md-center">
+          <Col md={8}>
+            <h1>Izmeni proizvod</h1>
+            <Form onSubmit={submitHandler}>
             <Form.Group className="my-2" controlId="name">
               <Form.Label>Naziv</Form.Label>
               <Form.Control value={name} onChange={(event) => setName(event.target.value)} />
@@ -100,12 +98,13 @@ const ProductEditScreen = () => {
                 onChange={(event) => setDescription(event.target.value)}
               />
             </Form.Group>
-            <Button type="submit" className="my-3">
+            <Button type="submit" className="my-3" disabled={loadingUpdate}>
               Sacuvaj izmene
             </Button>
-          </Form>
-        </Col>
-      </Row>
+            </Form>
+          </Col>
+        </Row>
+      )}
     </>
   );
 };

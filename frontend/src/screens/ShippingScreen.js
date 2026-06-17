@@ -8,12 +8,13 @@ const ShippingScreen = () => {
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('Srbija');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const submitHandler = (event) => {
     event.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode }));
+    dispatch(saveShippingAddress({ address, city, postalCode, country }));
     navigate('/payment');
   };
 
@@ -37,6 +38,10 @@ const ShippingScreen = () => {
               onChange={(event) => setPostalCode(event.target.value)}
               required
             />
+          </Form.Group>
+          <Form.Group className="my-3" controlId="country">
+            <Form.Label>Drzava</Form.Label>
+            <Form.Control value={country} onChange={(event) => setCountry(event.target.value)} required />
           </Form.Group>
           <Button type="submit">Nastavi</Button>
         </Form>

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { createProduct } from '../slices/adminProductsSlice';
+import Loader from '../components/Loader';
+import { useCreateProductMutation } from '../slices/productsApiSlice';
 
 const ProductCreateScreen = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [createProduct, { isLoading }] = useCreateProductMutation();
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -16,21 +16,23 @@ const ProductCreateScreen = () => {
   const [countInStock, setCountInStock] = useState('');
   const [description, setDescription] = useState('');
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
 
-    dispatch(
-      createProduct({
+    try {
+      await createProduct({
         name,
         price: Number(price),
         image: image || '/images/products/vanila-bourbon.png',
         category,
         countInStock: Number(countInStock),
         description,
-      }),
-    );
-    toast.success('Proizvod je dodat');
-    navigate('/admin/productlist');
+      }).unwrap();
+      toast.success('Proizvod je dodat');
+      navigate('/admin/productlist');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -92,9 +94,10 @@ const ProductCreateScreen = () => {
                 required
               />
             </Form.Group>
-            <Button type="submit" className="my-3">
+            <Button type="submit" className="my-3" disabled={isLoading}>
               Sacuvaj proizvod
             </Button>
+            {isLoading && <Loader />}
           </Form>
         </Col>
       </Row>

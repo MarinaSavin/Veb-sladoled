@@ -1,13 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { savePaymentMethod } from '../slices/cartSlice';
 
 const PaymentScreen = () => {
-  const [paymentMethod, setPaymentMethod] = useState('Placanje pouzecem');
+  const [paymentMethod, setPaymentMethod] = useState('PayPal');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { shippingAddress } = useSelector((state) => state.cart);
+
+  useEffect(() => {
+    if (!shippingAddress.address) {
+      navigate('/shipping');
+    }
+  }, [shippingAddress, navigate]);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -23,21 +30,11 @@ const PaymentScreen = () => {
           <Form.Check
             className="my-3"
             type="radio"
-            label="Placanje pouzecem"
-            id="cash"
+            label="PayPal ili kreditna kartica"
+            id="PayPal"
             name="paymentMethod"
-            value="Placanje pouzecem"
-            checked={paymentMethod === 'Placanje pouzecem'}
-            onChange={(event) => setPaymentMethod(event.target.value)}
-          />
-          <Form.Check
-            className="my-3"
-            type="radio"
-            label="Kartica"
-            id="card"
-            name="paymentMethod"
-            value="Kartica"
-            checked={paymentMethod === 'Kartica'}
+            value="PayPal"
+            checked={paymentMethod === 'PayPal'}
             onChange={(event) => setPaymentMethod(event.target.value)}
           />
           <Button type="submit">Nastavi</Button>
