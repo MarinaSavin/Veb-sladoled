@@ -1,5 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import User from '../models/userModel.js';
+import Product from '../models/productModel.js';
 import generateToken from '../utils/generateToken.js'
 
 
@@ -68,43 +69,11 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
-const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+const getFavoriteProducts = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).populate('favorites');
 
     if (user) {
-        res.status(200).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            isAdmin: user.isAdmin
-        });
-    }
-    else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
-
-
-const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-
-    if (user) {
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-
-        if (req.body.password) {
-            user.password = req.body.password;
-        }
-
-        const updatedUser = await user.save();
-
-        res.status(200).json({
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            isAdmin: updatedUser.isAdmin
-        });
+        res.status(200).json(user.favorites);
     } else {
         res.status(404);
         throw new Error('User not found');
@@ -112,26 +81,54 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 
-const getUsers = asyncHandler(async (req, res) => {
-    res.send('Get users');
+const addFavoriteProduct = asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.productId);
+
+    if (!product) {
+        res.status(404);
+        throw new Error('Product not found');
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        const alreadyFavorite = user.favorites.some(
+            (favoriteId) => favoriteId.toString() === product._id.toString()
+        );
+
+        if (!alreadyFavorite) {
+            user.favorites.push(product._id);
+            await user.save();
+        }
+
+        const updatedUser = await User.findById(req.user._id).populate('favorites');
+        res.status(200).json(updatedUser.favorites);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
 });
 
 
-const getUserById = asyncHandler(async (req, res) => {
-    res.send('Get user by ID');
-});
+const removeFavoriteProduct = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
 
+    if (user) {
+        user.favorites = user.favorites.filter(
+            (favoriteId) => favoriteId.toString() !== req.params.productId
+        );
 
-const deleteUser = asyncHandler(async (req, res) => {
-    res.send('Delete user');
-});
+        await user.save();
 
-
-const updateUser = asyncHandler(async (req, res) => {
-    res.send('Update user');
+        const updatedUser = await User.findById(req.user._id).populate('favorites');
+        res.status(200).json(updatedUser.favorites);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
 });
 
 export {
-    authUser, registerUser, logoutUser, getUserProfile, updateUserProfile,
-    getUsers, getUserById, deleteUser, updateUser
+    authUser, registerUser, logoutUser,
+    getFavoriteProducts, addFavoriteProduct, removeFavoriteProduct
 };

@@ -1,16 +1,16 @@
 import express from "express";
 import {
-    authUser, registerUser, logoutUser, getUserProfile, updateUserProfile,
-    getUsers, getUserById, deleteUser, updateUser
+    authUser, registerUser, logoutUser,
+    getFavoriteProducts, addFavoriteProduct, removeFavoriteProduct
 } from "../controllers/userController.js";
-import { protect, admin } from '../middleware/authMiddleware.js'
+import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
 
-router.route("/").post(registerUser).get(protect, admin, getUsers);
+router.route("/").post(registerUser);
 router.post("/login", authUser);
 router.post("/logout", logoutUser);
-router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
-router.route("/:id").delete(protect, admin, deleteUser).get(protect, admin, getUserById).put(protect, admin, updateUser);
+router.route("/favorites").get(protect, getFavoriteProducts);
+router.route("/favorites/:productId").post(protect, addFavoriteProduct).delete(protect, removeFavoriteProduct);
 
 export default router;

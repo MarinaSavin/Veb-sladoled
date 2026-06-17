@@ -4,15 +4,17 @@ import { FaHeart, FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../slices/authSlice';
-import { useLogoutMutation } from '../slices/usersApiSlice';
+import { useGetFavoritesQuery, useLogoutMutation } from '../slices/usersApiSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cartItems } = useSelector((state) => state.cart);
-  const { favoriteItems } = useSelector((state) => state.favorites);
   const { userInfo } = useSelector((state) => state.auth);
   const [logoutApiCall] = useLogoutMutation();
+  const { data: favoriteItems = [] } = useGetFavoritesQuery(undefined, {
+    skip: !userInfo,
+  });
   const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
   const logoutHandler = async () => {

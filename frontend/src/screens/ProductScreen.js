@@ -1,17 +1,20 @@
 import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Rating from '../components/Rating';
 import { addToCart } from '../slices/cartSlice';
-import { addToFavorites } from '../slices/favoriteSlice';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
+import { useAddFavoriteMutation } from '../slices/usersApiSlice';
 
 const ProductScreen = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.auth);
   const { data: product, isLoading, error } = useGetProductDetailsQuery(id);
+  const [addFavorite, { isLoading: loadingFavorite }] = useAddFavoriteMutation();
 
   if (isLoading) {
     return <Loader />;
@@ -32,8 +35,13 @@ const ProductScreen = () => {
     dispatch(addToCart({ ...product, qty: 1 }));
   };
 
-  const addToFavoritesHandler = () => {
-    dispatch(addToFavorites(product));
+  const addToFavoritesHandler = async () => {
+    if (!userInfo) {
+      navigate('/login');
+      return;
+    }
+
+    await addFavorite(product._id).unwrap();
   };
 
   return (
@@ -89,6 +97,7 @@ const ProductScreen = () => {
                   type="button"
                   variant="outline-primary"
                   className="w-100"
+                  disabled={loadingFavorite}
                   onClick={addToFavoritesHandler}
                 >
                   Dodaj u omiljene

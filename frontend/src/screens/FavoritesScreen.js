@@ -1,18 +1,27 @@
 import { Button, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeFromFavorites } from '../slices/favoriteSlice';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useGetFavoritesQuery, useRemoveFavoriteMutation } from '../slices/usersApiSlice';
 
 const FavoritesScreen = () => {
-  const dispatch = useDispatch();
-  const { favoriteItems } = useSelector((state) => state.favorites);
+  const { data: favoriteItems = [], isLoading, error } = useGetFavoritesQuery();
+  const [removeFavorite, { isLoading: loadingRemove }] = useRemoveFavoriteMutation();
+
+  const removeFromFavoritesHandler = async (productId) => {
+    await removeFavorite(productId).unwrap();
+  };
 
   return (
     <Row>
       <Col md={8}>
         <h1>Omiljeni proizvodi</h1>
-        {favoriteItems.length === 0 ? (
+        {isLoading ? (
+          <Loader />
+        ) : error ? (
+          <Message variant="danger">{error?.data?.message || error.error}</Message>
+        ) : favoriteItems.length === 0 ? (
           <p>
             Nemate omiljene proizvode. <Link to="/">Vrati se na proizvode</Link>
           </p>
@@ -32,7 +41,8 @@ const FavoritesScreen = () => {
                     <Button
                       type="button"
                       variant="light"
-                      onClick={() => dispatch(removeFromFavorites(item._id))}
+                      disabled={loadingRemove}
+                      onClick={() => removeFromFavoritesHandler(item._id)}
                     >
                       <FaTrash />
                     </Button>

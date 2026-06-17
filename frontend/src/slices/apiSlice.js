@@ -3,6 +3,6 @@ import { BASE_URL } from '../constants';
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL, credentials: 'include' }),
-  tagTypes: ['Product', 'Order', 'User'],
+  tagTypes: ['Product', 'Order', 'User', 'Favorite'],
   endpoints: () => ({}),
 });
